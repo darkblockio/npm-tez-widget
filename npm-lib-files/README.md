@@ -53,7 +53,10 @@ const cb = (param) => {
 ### Example
 
 ```
+import { BeaconWallet } from '@taquito/beacon-wallet'
 import TezosDarkblockWidget from "@darkblock.io/tez-widget"
+
+const wa = new DAppClient({ name: "Darkblock.io tezos" });
 
 const Widget = () => {
   ...

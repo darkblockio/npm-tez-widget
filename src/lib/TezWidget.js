@@ -45,7 +45,19 @@ const TezosDarkblockWidget = ({
     }
 
     if (state.value === "started") {
-      console.log("started")
+      // console.log("started")
+      // send({ type: "CONNECT_WALLET" })
+      const connectWallet = async () => {
+        const activeAccount = await wa.getActiveAccount()
+        if (activeAccount) {
+          // If defined, the user is connected to a wallet.
+          // You can now do an operation request, sign request, or send another permission request to switch wallet
+          setAddress(activeAccount.address)
+          send({ type: "CONNECT_WALLET" })
+        }
+      }
+
+      connectWallet()
     }
 
     if (state.value === "wallet_connected") {
@@ -81,7 +93,7 @@ const TezosDarkblockWidget = ({
   }, [state.value])
 
   const authenticate = async (wa) => {
-    console.log("wa: ", wa)
+    console.log("wa: ", wa, address)
   }
 
   return (
