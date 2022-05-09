@@ -44,7 +44,7 @@ const TezosDarkblockWidget = ({
       send({ type: "FETCH_ARWEAVE" })
     }
 
-    if (state.value === "started") {
+    if (state.value === "started" && wa && wa.getActiveAccount) {
       // console.log("started")
       // send({ type: "CONNECT_WALLET" })
       const connectWallet = async () => {
