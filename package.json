@@ -38,6 +38,7 @@
     ]
   },
   "devDependencies": {
+    "@airgap/beacon-sdk": "^3.0.0",
     "@babel/core": "^7.17.5",
     "@babel/preset-react": "^7.16.7",
     "@rollup/plugin-commonjs": "^21.0.2",

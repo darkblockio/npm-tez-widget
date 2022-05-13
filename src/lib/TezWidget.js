@@ -53,6 +53,7 @@ const TezosDarkblockWidget = ({
           // If defined, the user is connected to a wallet.
           // You can now do an operation request, sign request, or send another permission request to switch wallet
           setAddress(activeAccount.address)
+          console.log("address: ", address)
           send({ type: "CONNECT_WALLET" })
         }
       }
