@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import { Header, Panel, Player, utils, widgetMachine } from "@darkblock.io/shared-components"
 import "./db.css"
 import { useMachine } from "@xstate/react"
+import { char2Bytes } from "@taquito/utils"
+import { SigningType } from "@airgap/beacon-sdk"
 
 const platform = "Tezos"
 
@@ -22,6 +24,7 @@ const TezosDarkblockWidget = ({
 }) => {
   const [state, send] = useMachine(() => widgetMachine(tokenId, contractAddress, platform))
   const [address, setAddress] = useState(null)
+  const [key, setKey] = useState(null)
   const [mediaURL, setMediaURL] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
 
@@ -45,16 +48,29 @@ const TezosDarkblockWidget = ({
     }
 
     if (state.value === "started" && wa && wa.getActiveAccount) {
-      // console.log("started")
+      console.log("started sdfsdfsdfa", wa.connectionStatus)
       // send({ type: "CONNECT_WALLET" })
       const connectWallet = async () => {
         const activeAccount = await wa.getActiveAccount()
+
         if (activeAccount) {
           // If defined, the user is connected to a wallet.
           // You can now do an operation request, sign request, or send another permission request to switch wallet
           setAddress(activeAccount.address)
-          console.log("address: ", address)
+          setKey(activeAccount.publicKey)
+          console.log("Got active account", activeAccount.address)
+          console.log("Got active account", activeAccount.publicKey)
           send({ type: "CONNECT_WALLET" })
+        } else {
+          try {
+            const permissions = await wa.requestPermissions()
+            setAddress(permissions.address)
+            setKey(permissions.publicKey)
+            console.log("Got permissions", permissions.address)
+            console.log("Got permissions", permissions.publicKey)
+          } catch (e) {
+            console.log("Got error: ", e)
+          }
         }
       }
 
@@ -74,19 +90,20 @@ const TezosDarkblockWidget = ({
     }
 
     if (state.value === "decrypting") {
-      // setMediaURL(
-      //   utils.getProxyAsset(
-      //     state.context.artId,
-      //     epochSignature,
-      //     state.context.tokenId,
-      //     state.context.contractAddress,
-      //     null,
-      //     platform
-      //   )
-      // )
-      // setTimeout(() => {
-      //   send({ type: "SUCCESS" })
-      // }, 1000)
+      setMediaURL(
+        utils.getProxyAsset(
+          state.context.artId,
+          epochSignature,
+          state.context.tokenId,
+          state.context.contractAddress,
+          null,
+          platform,
+          key
+        )
+      )
+      setTimeout(() => {
+        send({ type: "SUCCESS" })
+      }, 1000)
     }
 
     if (state.value === "display") {
@@ -94,7 +111,39 @@ const TezosDarkblockWidget = ({
   }, [state.value])
 
   const authenticate = async (wa) => {
-    console.log("wa: ", wa, address)
+    let signature = null
+    let epoch = Date.now()
+    let data = epoch + key
+    let payloadBytes = "0501" + char2Bytes(data)
+    let ownerDataWithOwner
+
+    const payload = {
+      signingType: SigningType.MICHELINE,
+      payload: payloadBytes,
+      sourceAddress: address,
+    }
+
+    try {
+      ownerDataWithOwner = await utils.getOwner(contractAddress, tokenId, platform, address)
+
+      if (
+        !ownerDataWithOwner ||
+        !ownerDataWithOwner.owner_address ||
+        ownerDataWithOwner.owner_address.toLowerCase() !== address.toLowerCase()
+      ) {
+        send({ type: "FAIL" })
+      } else {
+        const signedPayload = await wa.requestSignPayload(payload)
+        signature = encodeURIComponent(signedPayload.signature) + "_Tezos"
+        console.log(signature)
+        setEpochSignature(epoch + "_" + signature)
+        console.log(epochSignature)
+        send({ type: "SUCCESS" })
+      }
+    } catch (e) {
+      console.log(e)
+      signature ? send({ type: "FAIL" }) : send({ type: "CANCEL" })
+    }
   }
 
   return (
@@ -107,6 +156,7 @@ const TezosDarkblockWidget = ({
         )}
         <Panel state={state} />
         {config.debug && <p>{state.value}</p>}
+        <p>{address}</p>
       </>
     </div>
   )
