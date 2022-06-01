@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Header, Panel, Player, utils, widgetMachine } from "@darkblock.io/shared-components"
-import "./db.css"
 import { useMachine } from "@xstate/react"
 import { char2Bytes } from "@taquito/utils"
 import { SigningType } from "@airgap/beacon-sdk"
