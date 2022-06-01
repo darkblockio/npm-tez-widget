@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Header, Panel, Player, utils, widgetMachine } from "@darkblock.io/shared-components"
+import { Stack, utils, widgetMachine } from "@darkblock.io/shared-components"
 import { useMachine } from "@xstate/react"
 import { char2Bytes } from "@taquito/utils"
 import { SigningType } from "@airgap/beacon-sdk"
@@ -25,6 +25,7 @@ const TezosDarkblockWidget = ({
   const [address, setAddress] = useState(null)
   const [key, setKey] = useState(null)
   const [mediaURL, setMediaURL] = useState("")
+  const [stackMediaURLs, setStackMediaURLs] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
 
   const callback = (state) => {
@@ -100,6 +101,24 @@ const TezosDarkblockWidget = ({
           key
         )
       )
+
+      let arrTemp = []
+
+      state.context.display.stack.map((db) => {
+        arrTemp.push(
+          utils.getProxyAsset(
+            db.artId,
+            epochSignature,
+            state.context.tokenId,
+            state.context.contractAddress,
+            null,
+            platform
+          )
+        )
+      })
+
+      setStackMediaURLs(arrTemp)
+
       setTimeout(() => {
         send({ type: "SUCCESS" })
       }, 1000)
@@ -145,20 +164,7 @@ const TezosDarkblockWidget = ({
     }
   }
 
-  return (
-    <div className={config.customCssClass ? `DarkblockWidget-App ${config.customCssClass}` : `DarkblockWidget-App`}>
-      <>
-        {state.value === "display" ? (
-          <Player mediaType={state.context.display.fileFormat} mediaURL={mediaURL} config={config.imgViewer} />
-        ) : (
-          <Header state={state} authenticate={() => send({ type: "SIGN" })} />
-        )}
-        <Panel state={state} />
-        {config.debug && <p>{state.value}</p>}
-        <p>{address}</p>
-      </>
-    </div>
-  )
+  return <Stack state={state} authenticate={() => send({ type: "SIGN" })} urls={stackMediaURLs} config={config} />
 }
 
 export default TezosDarkblockWidget
