@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { Stack, utils, widgetMachine } from "@darkblock.io/shared-components"
 import { useMachine } from "@xstate/react"
-import { char2Bytes } from "@taquito/utils"
-import { SigningType } from "@airgap/beacon-sdk"
 
 const platform = "Tezos"
+
+const char2Bytes = (str) => {
+  return Buffer.from(str, 'utf8').toString('hex');
+}
 
 const TezosDarkblockWidget = ({
   contractAddress,
@@ -137,7 +139,7 @@ const TezosDarkblockWidget = ({
     let ownerDataWithOwner
 
     const payload = {
-      signingType: SigningType.MICHELINE,
+      signingType: "micheline",
       payload: payloadBytes,
       sourceAddress: address,
     }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { storiesOf } from "@storybook/react"
 import { DAppClient, NetworkType } from "@airgap/beacon-sdk"
-import TezosDarkblockWidget from "../lib/TezWidget"
+// import TezosDarkblockWidget from "../lib/TezWidget"
+import TezosDarkblockWidget from "../../dist/index"
 
 const stories = storiesOf("Tezos Darkblock Widget tester", module)
 
