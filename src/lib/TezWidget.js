@@ -112,7 +112,8 @@ const TezosDarkblockWidget = ({
             state.context.tokenId,
             state.context.contractAddress,
             null,
-            platform
+            platform,
+            key
           )
         )
       })
