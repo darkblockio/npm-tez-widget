@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Stack, utils, widgetMachine } from '@darkblock.io/shared-components'
 import { useMachine } from '@xstate/react'
 import { char2Bytes } from '@taquito/utils'
-import { SigningType } from '@airgap/beacon-sdk'
 
 const platform = 'Tezos'
 
@@ -121,19 +120,21 @@ const TezosDarkblockWidget = ({
     let signature = null
     let epoch = Date.now()
 
+    let permissions = await wa.client.requestPermissions();
+    if (!permissions) {
+      await wa.clearActiveAccount();
+      permissions = await wa.client.requestPermissions();
+    }
 
-    // let permissions = await wa.client.requestPermissions();
-    // if (!permissions) {
-    //   await wa.clearActiveAccount();
-    //   permissions = await wa.client.requestPermissions();
-    // }
+    setAddress(permissions.address)
+    setKeyAddress(permissions.publicKey)
 
-    let data = epoch + keyAddress
+    let data = epoch + permissions.publicKey
     let payloadBytes = "0501" + char2Bytes(data)
     let ownerDataWithOwner
 
     const payload = {
-      signingType: SigningType.MICHELINE,
+      signingType: "micheline",
       payload: payloadBytes,
       sourceAddress: address,
     }
