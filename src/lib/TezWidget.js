@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react"
-import { Header, Panel, Player, utils, widgetMachine } from "@darkblock.io/shared-components"
-import "./db.css"
-import { useMachine } from "@xstate/react"
-import { char2Bytes } from "@taquito/utils"
-import { SigningType } from "@airgap/beacon-sdk"
+import React, { useState, useEffect } from 'react'
+import { Stack, utils, widgetMachine } from '@darkblock.io/shared-components'
+import { useMachine } from '@xstate/react'
+import { char2Bytes } from '@taquito/utils'
 
-const platform = "Tezos"
+const platform = 'Tezos'
 
 const TezosDarkblockWidget = ({
   contractAddress,
@@ -24,8 +22,9 @@ const TezosDarkblockWidget = ({
 }) => {
   const [state, send] = useMachine(() => widgetMachine(tokenId, contractAddress, platform))
   const [address, setAddress] = useState(null)
-  const [key, setKey] = useState(null)
-  const [mediaURL, setMediaURL] = useState("")
+  const [keyAddress, setKeyAddress] = useState(null)
+  const [mediaURL, setMediaURL] = useState('')
+  const [stackMediaURLs, setStackMediaURLs] = useState('')
   const [epochSignature, setEpochSignature] = useState(null)
 
   const callback = (state) => {
@@ -36,7 +35,7 @@ const TezosDarkblockWidget = ({
     try {
       cb(state)
     } catch (e) {
-      console.log("Callback function error: ", e)
+      console.error("Callback function error: ", e)
     }
   }
 
@@ -47,31 +46,19 @@ const TezosDarkblockWidget = ({
       send({ type: "FETCH_ARWEAVE" })
     }
 
-    if (state.value === "started" && wa && wa.getActiveAccount) {
-      console.log("started sdfsdfsdfa", wa.connectionStatus)
+    if (state.value === "started" && wa) {
       // send({ type: "CONNECT_WALLET" })
       const connectWallet = async () => {
-        const activeAccount = await wa.getActiveAccount()
-
-        if (activeAccount) {
-          // If defined, the user is connected to a wallet.
-          // You can now do an operation request, sign request, or send another permission request to switch wallet
-          setAddress(activeAccount.address)
-          setKey(activeAccount.publicKey)
-          console.log("Got active account", activeAccount.address)
-          console.log("Got active account", activeAccount.publicKey)
-          send({ type: "CONNECT_WALLET" })
-        } else {
-          try {
-            const permissions = await wa.requestPermissions()
-            setAddress(permissions.address)
-            setKey(permissions.publicKey)
-            console.log("Got permissions", permissions.address)
-            console.log("Got permissions", permissions.publicKey)
-          } catch (e) {
-            console.log("Got error: ", e)
-          }
+        let permissions = await wa.client.requestPermissions();
+        if (!permissions) {
+          await wa.clearActiveAccount();
+          permissions = await wa.client.requestPermissions();
         }
+
+        setAddress(permissions.address)
+        setKeyAddress(permissions.publicKey)
+
+        send({ type: "CONNECT_WALLET" })
       }
 
       connectWallet()
@@ -98,9 +85,28 @@ const TezosDarkblockWidget = ({
           state.context.contractAddress,
           null,
           platform,
-          key
+          keyAddress,
         )
       )
+
+      let arrTemp = []
+
+      state.context.display.stack.map((db) => {
+        arrTemp.push(
+          utils.getProxyAsset(
+            db.artId,
+            epochSignature,
+            state.context.tokenId,
+            state.context.contractAddress,
+            null,
+            platform,
+            keyAddress,
+          )
+        )
+      })
+
+      setStackMediaURLs(arrTemp)
+
       setTimeout(() => {
         send({ type: "SUCCESS" })
       }, 1000)
@@ -113,12 +119,22 @@ const TezosDarkblockWidget = ({
   const authenticate = async (wa) => {
     let signature = null
     let epoch = Date.now()
-    let data = epoch + key
+
+    let permissions = await wa.client.requestPermissions();
+    if (!permissions) {
+      await wa.clearActiveAccount();
+      permissions = await wa.client.requestPermissions();
+    }
+
+    setAddress(permissions.address)
+    setKeyAddress(permissions.publicKey)
+
+    let data = epoch + permissions.publicKey
     let payloadBytes = "0501" + char2Bytes(data)
     let ownerDataWithOwner
 
     const payload = {
-      signingType: SigningType.MICHELINE,
+      signingType: "micheline",
       payload: payloadBytes,
       sourceAddress: address,
     }
@@ -133,33 +149,18 @@ const TezosDarkblockWidget = ({
       ) {
         send({ type: "FAIL" })
       } else {
-        const signedPayload = await wa.requestSignPayload(payload)
+        const signedPayload = await wa.client.requestSignPayload(payload)
         signature = encodeURIComponent(signedPayload.signature) + "_Tezos"
-        console.log(signature)
         setEpochSignature(epoch + "_" + signature)
-        console.log(epochSignature)
         send({ type: "SUCCESS" })
       }
     } catch (e) {
-      console.log(e)
+      console.error(e)
       signature ? send({ type: "FAIL" }) : send({ type: "CANCEL" })
     }
   }
 
-  return (
-    <div className={config.customCssClass ? `DarkblockWidget-App ${config.customCssClass}` : `DarkblockWidget-App`}>
-      <>
-        {state.value === "display" ? (
-          <Player mediaType={state.context.display.fileFormat} mediaURL={mediaURL} config={config.imgViewer} />
-        ) : (
-          <Header state={state} authenticate={() => send({ type: "SIGN" })} />
-        )}
-        <Panel state={state} />
-        {config.debug && <p>{state.value}</p>}
-        <p>{address}</p>
-      </>
-    </div>
-  )
+  return <Stack state={state} authenticate={() => send({ type: "SIGN" })} urls={stackMediaURLs} config={config} />
 }
 
 export default TezosDarkblockWidget
