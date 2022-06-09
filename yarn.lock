@@ -1317,10 +1317,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/postcss-unset-value/-/postcss-unset-value-1.0.0.tgz#f6e0e58376f09e381a49bd553772a97a477da3fd"
   integrity sha512-T5ZyNSw9G0x0UDFiXV40a7VjKw2b+l4G+S0sctKqxhx8cg9QtMUAGwJBVU9mHPDPoZEmwm0tEoukjl4zb9MU7Q==
 
-"@darkblock.io/shared-components@0.0.23":
-  version "0.0.23"
-  resolved "https://registry.yarnpkg.com/@darkblock.io/shared-components/-/shared-components-0.0.23.tgz#4b5915ec32228ebeb2a474d0de5923067a5230a6"
-  integrity sha512-G9M3qnlQLqqBI5NtNnmfaZhiYPVAOPrxEhcFbObVKK41OezOzL0xKeSkskIKw1MOtVtvFVokCHbHvq7Zso8NwA==
+"@darkblock.io/shared-components@0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@darkblock.io/shared-components/-/shared-components-0.0.24.tgz#134f1225676ac8223c137a40a4148be71d296f56"
+  integrity sha512-UBhRyxqkIZooMTyHRPzelcwOId0yqgu4yDzgeCeztdN5IVLm53BZDZh4QGZQB23FYIY2QzS3TQ6copFPFk1fxg==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^6.1.1"
     "@fortawesome/free-solid-svg-icons" "^6.1.1"
