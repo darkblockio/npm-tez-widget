@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { Stack, utils, widgetMachine } from '@darkblock.io/shared-components'
-import { useMachine } from '@xstate/react'
-import { char2Bytes } from '@taquito/utils'
+import React, { useState, useEffect } from "react"
+import { Stack, utils, widgetMachine } from "@darkblock.io/shared-components"
+import { useMachine } from "@xstate/react"
+import { char2Bytes } from "@taquito/utils"
 
-const platform = 'Tezos'
+const platform = "Tezos"
 
 const TezosDarkblockWidget = ({
   contractAddress,
@@ -23,8 +23,8 @@ const TezosDarkblockWidget = ({
   const [state, send] = useMachine(() => widgetMachine(tokenId, contractAddress, platform))
   const [address, setAddress] = useState(null)
   const [keyAddress, setKeyAddress] = useState(null)
-  const [mediaURL, setMediaURL] = useState('')
-  const [stackMediaURLs, setStackMediaURLs] = useState('')
+  const [mediaURL, setMediaURL] = useState("")
+  const [stackMediaURLs, setStackMediaURLs] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
 
   const callback = (state) => {
@@ -49,14 +49,22 @@ const TezosDarkblockWidget = ({
     if (state.value === "started" && wa) {
       // send({ type: "CONNECT_WALLET" })
       const connectWallet = async () => {
-        let permissions = await wa.client.requestPermissions();
-        if (!permissions) {
-          await wa.clearActiveAccount();
-          permissions = await wa.client.requestPermissions();
+        let tezAddress = null
+        let tezPublicKey = null
+
+        const activeAccount = await wa.client.getActiveAccount()
+        if (!activeAccount) {
+          await wa.clearActiveAccount()
+          let permissions = await wa.client.requestPermissions()
+          tezAddress = permissions.address
+          tezPublicKey = permissions.publicKey
+        } else {
+          tezAddress = activeAccount.address
+          tezPublicKey = activeAccount.publicKey
         }
 
-        setAddress(permissions.address)
-        setKeyAddress(permissions.publicKey)
+        setAddress(tezAddress)
+        setKeyAddress(tezPublicKey)
 
         send({ type: "CONNECT_WALLET" })
       }
@@ -85,7 +93,7 @@ const TezosDarkblockWidget = ({
           state.context.contractAddress,
           null,
           platform,
-          keyAddress,
+          keyAddress
         )
       )
 
@@ -100,7 +108,7 @@ const TezosDarkblockWidget = ({
             state.context.contractAddress,
             null,
             platform,
-            keyAddress,
+            keyAddress
           )
         )
       })
@@ -120,10 +128,10 @@ const TezosDarkblockWidget = ({
     let signature = null
     let epoch = Date.now()
 
-    let permissions = await wa.client.requestPermissions();
+    let permissions = await wa.client.requestPermissions()
     if (!permissions) {
-      await wa.clearActiveAccount();
-      permissions = await wa.client.requestPermissions();
+      await wa.clearActiveAccount()
+      permissions = await wa.client.requestPermissions()
     }
 
     setAddress(permissions.address)
