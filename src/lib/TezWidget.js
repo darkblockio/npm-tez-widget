@@ -42,6 +42,10 @@ const TezosDarkblockWidget = ({
   useEffect(() => {
     callback(state.value)
 
+    if (!wa) {
+      send({ type: "NO_WALLET" })
+    }
+
     if (state.value === "idle") {
       send({ type: "FETCH_ARWEAVE" })
     }
