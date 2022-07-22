@@ -44,69 +44,53 @@ const TezosDarkblockWidget = ({
 
     if (!wa) {
       send({ type: "NO_WALLET" })
-    }
-
-    if (state.value === "idle") {
-      send({ type: "FETCH_ARWEAVE" })
-    }
-
-    if (state.value === "started" && wa) {
-      // send({ type: "CONNECT_WALLET" })
-      const connectWallet = async () => {
-        let tezAddress = null
-        let tezPublicKey = null
-
-        const activeAccount = await wa.client.getActiveAccount()
-        if (!activeAccount) {
-          await wa.clearActiveAccount()
-          let permissions = await wa.client.requestPermissions()
-          tezAddress = permissions.address
-          tezPublicKey = permissions.publicKey
-        } else {
-          tezAddress = activeAccount.address
-          tezPublicKey = activeAccount.publicKey
-        }
-
-        setAddress(tezAddress)
-        setKeyAddress(tezPublicKey)
-
-        send({ type: "CONNECT_WALLET" })
+    } else {
+      if (state.value === "idle") {
+        send({ type: "FETCH_ARWEAVE" })
       }
 
-      connectWallet()
-    }
+      if (state.value === "started" && wa) {
+        // send({ type: "CONNECT_WALLET" })
+        const connectWallet = async () => {
+          let tezAddress = null
+          let tezPublicKey = null
 
-    if (state.value === "wallet_connected") {
-      // send({ type: "SIGN" })
-    }
+          const activeAccount = await wa.client.getActiveAccount()
+          if (!activeAccount) {
+            await wa.clearActiveAccount()
+            let permissions = await wa.client.requestPermissions()
+            tezAddress = permissions.address
+            tezPublicKey = permissions.publicKey
+          } else {
+            tezAddress = activeAccount.address
+            tezPublicKey = activeAccount.publicKey
+          }
 
-    if (state.value === "signing") {
-      authenticate(wa)
-    }
+          setAddress(tezAddress)
+          setKeyAddress(tezPublicKey)
 
-    if (state.value === "authenticated") {
-      send({ type: "DECRYPT" })
-    }
+          send({ type: "CONNECT_WALLET" })
+        }
 
-    if (state.value === "decrypting") {
-      setMediaURL(
-        utils.getProxyAsset(
-          state.context.artId,
-          epochSignature,
-          state.context.tokenId,
-          state.context.contractAddress,
-          null,
-          platform,
-          keyAddress
-        )
-      )
+        connectWallet()
+      }
 
-      let arrTemp = []
+      if (state.value === "wallet_connected") {
+        // send({ type: "SIGN" })
+      }
 
-      state.context.display.stack.map((db) => {
-        arrTemp.push(
+      if (state.value === "signing") {
+        authenticate(wa)
+      }
+
+      if (state.value === "authenticated") {
+        send({ type: "DECRYPT" })
+      }
+
+      if (state.value === "decrypting") {
+        setMediaURL(
           utils.getProxyAsset(
-            db.artId,
+            state.context.artId,
             epochSignature,
             state.context.tokenId,
             state.context.contractAddress,
@@ -115,16 +99,32 @@ const TezosDarkblockWidget = ({
             keyAddress
           )
         )
-      })
 
-      setStackMediaURLs(arrTemp)
+        let arrTemp = []
 
-      setTimeout(() => {
-        send({ type: "SUCCESS" })
-      }, 1000)
-    }
+        state.context.display.stack.map((db) => {
+          arrTemp.push(
+            utils.getProxyAsset(
+              db.artId,
+              epochSignature,
+              state.context.tokenId,
+              state.context.contractAddress,
+              null,
+              platform,
+              keyAddress
+            )
+          )
+        })
 
-    if (state.value === "display") {
+        setStackMediaURLs(arrTemp)
+
+        setTimeout(() => {
+          send({ type: "SUCCESS" })
+        }, 1000)
+      }
+
+      if (state.value === "display") {
+      }
     }
   }, [state.value])
 
