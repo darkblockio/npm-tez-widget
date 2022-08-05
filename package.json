@@ -14,7 +14,7 @@
     "NFT"
   ],
   "dependencies": {
-    "@darkblock.io/shared-components": "0.1.9",
+    "@darkblock.io/shared-components": "0.1.10",
     "@taquito/beacon-wallet": "^12.1.1",
     "@taquito/taquito": "^12.1.1",
     "@taquito/utils": "^12.1.1",
