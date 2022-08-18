@@ -1,4 +1,4 @@
-import { char2Bytes, validateSignature } from "@taquito/utils"
+import { char2Bytes } from "@taquito/utils"
 
 const signTezosData = async (data, wallet) => {
   const activeAccount = await wallet.client.getActiveAccount()
@@ -26,9 +26,8 @@ const signTezosData = async (data, wallet) => {
       const signData = async () => {
         const signedPayload = await wallet.client.requestSignPayload(payload)
         signature = encodeURIComponent(signedPayload.signature)
-        const sigValidation = validateSignature(signature)
 
-        if (!signedPayload && sigValidation === 3) {
+        if (!signedPayload) {
           reject("error signing")
         } else {
           resolve(signature)
