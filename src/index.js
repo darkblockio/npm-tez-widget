@@ -1,2 +1,4 @@
 import TezosDarkblockWidget from "./lib/TezWidget"
-export default TezosDarkblockWidget
+import TezosUpgradeWidget from "./lib/TezUpgradeWidget"
+
+export default { TezosDarkblockWidget, TezosUpgradeWidget }
