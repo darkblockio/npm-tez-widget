@@ -24,7 +24,7 @@ import TezosDarkblockWidget from "@darkblock.io/tez-widget"
 
 - **contractAddress:** contractAddress
 - **tokenId:** id of the NFT in Tezos
-- **wa:\*** wallet adapter object
+- **w3:\*** tezos wallet object
 - **cb:** callback function to be triggered on the widget's state change (optional)
 - **config:** config object (optional)
 
@@ -53,19 +53,45 @@ const cb = (param) => {
 ### Example
 
 ```
-import { BeaconWallet } from '@taquito/beacon-wallet'
-import TezosDarkblockWidget from "@darkblock.io/tez-widget"
-
-const wa = new DAppClient({ name: "Darkblock.io tezos" });
+import { TezosDarkblockWidget } from "@darkblock.io/tez-widget"
 
 const Widget = () => {
   ...
 
+  const contractAddress = 'nft contract address'
+  const tokenId = 'nft token id'
+  
   return (
     <TezosDarkblockWidget
-      contractAddress="0x495f947276749ce646f68ac8c248420045cb7b5e"
-      tokenId="30553606573219150352991292921105176340809048341686170040023897672591735783425"
-      wa={wa}
+      contractAddress={contractAddress}
+      tokenId={tokenId
+      w3={web3}
+      cb={(p) => console.log(p)}
+      config={config}
+    />
+  )
+}
+
+export default Widget
+
+```
+
+### Example
+
+```
+import { TezosUpgradeWidget } from "@darkblock.io/tez-widget"
+
+const Widget = () => {
+  const apiKey = '** contact darkblock for apikey **'
+  const contractAddress = 'nft contract address'
+  const tokenId = 'nft token id'
+
+  return (
+    <TezosUpgradeWidget
+      apiKey={apiKey} 
+      contractAddress={contractAddress}
+      tokenId={tokenId
+      w3={web3}
       cb={(p) => console.log(p)}
       config={config}
     />
