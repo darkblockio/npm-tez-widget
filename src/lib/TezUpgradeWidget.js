@@ -20,8 +20,9 @@ const TezosUpgradeWidget = ({
       controlsFadeDelay: true,
     },
   },
+  dev = false,
 }) => {
-  const [state, send] = useMachine(() => upgradeMachine(tokenId, contractAddress, platform))
+  const [state, send] = useMachine(() => upgradeMachine(tokenId, contractAddress, platform, dev))
   const [address, setAddress] = useState(null)
   const [keyAddress, setKeyAddress] = useState(null)
   const [mediaURL, setMediaURL] = useState("")
@@ -102,7 +103,7 @@ const TezosUpgradeWidget = ({
 
     try {
       setTimeout(async () => {
-        creatorDataWithOwner = await utils.getCreator(contractAddress, tokenId, platform)
+        creatorDataWithOwner = await utils.getCreator(contractAddress, tokenId, platform, dev)
 
         if (
           creatorDataWithOwner &&
