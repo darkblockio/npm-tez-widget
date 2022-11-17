@@ -142,8 +142,16 @@ const TezosDarkblockWidget = ({
     setAddress(permissions.address)
     setKeyAddress(permissions.publicKey)
 
-    let data = epoch + permissions.publicKey
-    let payloadBytes = "0501" + char2Bytes(data)
+    let data = `You are unlocking content via the Darkblock Protocol.\n\nPlease sign to authenticate.\n\nThis request will not trigger a blockchain transaction or cost any fee.\n\nAuthentication Token: ${epoch + permissions.publicKey}`;
+
+    const formattedInput = [
+      'Tezos Signed Message:',
+      '\n\n',
+      data,
+    ].join(' ');
+
+    const bytes = char2Bytes(formattedInput)
+    const payloadBytes = '050100' + char2Bytes('' + bytes.length) + bytes
     let ownerDataWithOwner
 
     const payload = {

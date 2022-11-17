@@ -122,8 +122,9 @@ const TezosUpgradeWidget = ({
 
   const signFileUploadData = async () => {
     let signatureData = `${state.context.platform}${state.context.nftData.nft.contract}:${state.context.nftData.nft.token}${state.context.fileHash}`
+    let msmSignature = `You are interacting with the Darkblock Protocol.\n\nPlease sign to upgrade this NFT.\n\nThis request will not trigger a blockchain transaction or cost any fee.\n\nAuthentication Token: ${signatureData}`;
 
-    await signTypedData(signatureData, wa)
+    await signTypedData(msmSignature, wa)
       .then((response) => {
         state.context.signature = response
         send({ type: "SIGNING_SUCCESS" })

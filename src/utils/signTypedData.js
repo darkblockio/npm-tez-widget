@@ -14,7 +14,15 @@ const signTezosData = async (data, wallet) => {
     address = permissions.address
   }
 
-  const payloadBytes = "0501" + char2Bytes(data)
+  const formattedInput = [
+    'Tezos Signed Message:',
+    '\n\n',
+    data,
+  ].join(' ');
+
+  const bytes = char2Bytes(formattedInput)
+  const payloadBytes = '050100' + char2Bytes('' + bytes.length) + bytes
+
   const payload = {
     signingType: "micheline",
     payload: payloadBytes,
