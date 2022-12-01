@@ -3,8 +3,6 @@ import { Upgrader, utils, upgradeMachine } from "@darkblock.io/shared-components
 import { useMachine } from "@xstate/react"
 import signTypedData from "../utils/signTypedData"
 
-const platform = "Tezos"
-
 const TezosUpgradeWidget = ({
   apiKey = null,
   contractAddress,
@@ -20,6 +18,7 @@ const TezosUpgradeWidget = ({
       controlsFadeDelay: true,
     },
   },
+  network = "mainnet",
   dev = false,
 }) => {
   const [state, send] = useMachine(() => upgradeMachine(tokenId, contractAddress, platform, dev))
@@ -28,6 +27,9 @@ const TezosUpgradeWidget = ({
   const [mediaURL, setMediaURL] = useState("")
   const [stackMediaURLs, setStackMediaURLs] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
+
+  const upperNetwork = network.charAt(0).toUpperCase() + network.slice(1)
+  const platform = network.toLowerCase() === "mainnet" ? "Tezos" : `Tezos-${upperNetwork}`
 
   const callback = (state) => {
     if (config.debug) console.log("Callback function called from widget. State: ", state)

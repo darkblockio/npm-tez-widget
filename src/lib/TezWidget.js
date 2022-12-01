@@ -3,8 +3,6 @@ import { Stack, utils, widgetMachine } from "@darkblock.io/shared-components"
 import { useMachine } from "@xstate/react"
 import { char2Bytes } from "@taquito/utils"
 
-const platform = "Tezos"
-
 const TezosDarkblockWidget = ({
   contractAddress,
   tokenId,
@@ -19,6 +17,7 @@ const TezosDarkblockWidget = ({
       controlsFadeDelay: true,
     },
   },
+  network = "mainnet",
   dev = false,
 }) => {
   const [state, send] = useMachine(() => widgetMachine(tokenId, contractAddress, platform, dev))
@@ -27,6 +26,9 @@ const TezosDarkblockWidget = ({
   const [mediaURL, setMediaURL] = useState("")
   const [stackMediaURLs, setStackMediaURLs] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
+
+  const upperNetwork = network.charAt(0).toUpperCase() + network.slice(1)
+  const platform = network.toLowerCase() === "mainnet" ? "Tezos" : `Tezos-${upperNetwork}`
 
   const callback = (state) => {
     if (config.debug) console.log("Callback function called from widget. State: ", state)
@@ -142,16 +144,14 @@ const TezosDarkblockWidget = ({
     setAddress(permissions.address)
     setKeyAddress(permissions.publicKey)
 
-    let data = `You are unlocking content via the Darkblock Protocol.\n\nPlease sign to authenticate.\n\nThis request will not trigger a blockchain transaction or cost any fee.\n\nAuthentication Token: ${epoch + permissions.publicKey}`;
+    let data = `You are unlocking content via the Darkblock Protocol.\n\nPlease sign to authenticate.\n\nThis request will not trigger a blockchain transaction or cost any fee.\n\nAuthentication Token: ${
+      epoch + permissions.publicKey
+    }`
 
-    const formattedInput = [
-      'Tezos Signed Message:',
-      '\n\n',
-      data,
-    ].join(' ');
+    const formattedInput = ["Tezos Signed Message:", "\n\n", data].join(" ")
 
     const bytes = char2Bytes(formattedInput)
-    const payloadBytes = '050100' + char2Bytes('' + bytes.length) + bytes
+    const payloadBytes = "050100" + char2Bytes("" + bytes.length) + bytes
     let ownerDataWithOwner
 
     const payload = {
