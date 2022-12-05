@@ -21,15 +21,15 @@ const TezosUpgradeWidget = ({
   network = "mainnet",
   dev = false,
 }) => {
+  const upperNetwork = network.charAt(0).toUpperCase() + network.slice(1)
+  const platform = network.toLowerCase() === "mainnet" ? "Tezos" : `Tezos-${upperNetwork}`
+
   const [state, send] = useMachine(() => upgradeMachine(tokenId, contractAddress, platform, dev))
   const [address, setAddress] = useState(null)
   const [keyAddress, setKeyAddress] = useState(null)
   const [mediaURL, setMediaURL] = useState("")
   const [stackMediaURLs, setStackMediaURLs] = useState("")
   const [epochSignature, setEpochSignature] = useState(null)
-
-  const upperNetwork = network.charAt(0).toUpperCase() + network.slice(1)
-  const platform = network.toLowerCase() === "mainnet" ? "Tezos" : `Tezos-${upperNetwork}`
 
   const callback = (state) => {
     if (config.debug) console.log("Callback function called from widget. State: ", state)
