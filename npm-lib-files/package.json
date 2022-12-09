@@ -1,6 +1,6 @@
 {
   "name": "@darkblock.io/tez-widget",
-  "version": "0.2.33",
+  "version": "0.2.35",
   "description": "Darkblock.io React Component Library",
   "main": "./dist/index.js",
   "module": "./dist/index.es.js",
@@ -15,13 +15,11 @@
   ],
   "dependencies": {
     "@xstate/react": "^2.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "react-scripts": "5.0.0"
   },
   "peerDependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": ">=17.0.2",
+    "react-dom": ">=17.0.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
