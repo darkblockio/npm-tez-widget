@@ -21,6 +21,12 @@ stories.add("Viewer", () => {
     })
     Tezos.setWalletProvider(tezosWallet)
 
+    const dbConfigOptions = {
+      include: [],
+      exclude: [],
+      sort: [],
+    }
+
     useEffect(async () => {
       try {
         await tezosWallet.clearActiveAccount()
@@ -52,6 +58,7 @@ stories.add("Viewer", () => {
               },
             }}
             dev={false}
+            dbConfig={dbConfigOptions}
           />
         )}
       </div>
