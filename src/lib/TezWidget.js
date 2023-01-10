@@ -172,7 +172,7 @@ const TezosDarkblockWidget = ({
         send({ type: "FAIL" })
       } else {
         const signedPayload = await wa.client.requestSignPayload(payload)
-        signature = encodeURIComponent(signedPayload.signature) + "_Tezos"
+        signature = encodeURIComponent(signedPayload.signature) + `_${platform}`
         setEpochSignature(epoch + "_" + signature)
         send({ type: "SUCCESS" })
       }
